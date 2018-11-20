@@ -18,6 +18,17 @@ public class Aufgabe2 extends AbstractOpenGLBase {
 		glUseProgram(shaderProgram.getId());
 
 		// Koordinaten, VAO, VBO, ... hier anlegen und im Grafikspeicher ablegen
+		int vaoId = glGenVertexArrays();
+		glBindVertexArray(vaoId);
+		int vboId = glGenBuffers();
+		glBindBuffer(GL_ARRAY_BUFFER, vboId);
+		glBufferData(GL_ARRAY_BUFFER,new int[] { 
+				   -1,-1,0,
+				    1,-1,0,
+				    0,1,0,
+		}, GL_STATIC_DRAW);
+		glVertexAttribPointer(0, 2, GL_FLOAT,false, 0, 0);
+		glEnableVertexAttribArray(0);
 	}
 
 	@Override
@@ -27,7 +38,7 @@ public class Aufgabe2 extends AbstractOpenGLBase {
 	@Override
 	protected void render() {
 		glClear(GL_COLOR_BUFFER_BIT); // Zeichenfläche leeren
-
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 		// hier vorher erzeugte VAOs zeichnen
 	}
 
