@@ -26,14 +26,14 @@ public class Aufgabe3undFolgende extends AbstractOpenGLBase {
 
 	@Override
 	public void update() {
-		// Transformation durchführen (Matrix anpassen)
+		// Transformation durchfhren (Matrix anpassen)
 	}
 
 	@Override
 	protected void render() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// Matrix an Shader übertragen
+		// Matrix an Shader bertragen
 		// VAOs zeichnen
 	}
 

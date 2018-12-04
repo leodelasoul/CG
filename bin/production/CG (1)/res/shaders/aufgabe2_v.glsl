@@ -15,7 +15,8 @@ vec2 rotatePoint(vec2 point, float angle) {
 void main() {
 
     triangleColor = colors;
-	float angle = 6.0;
+    for(int i=0;i<60;i++){
 
-	gl_Position = vec4(rotatePoint(vertices, angle), 0.0, 1.0);
+	    gl_Position = vec4(rotatePoint(vertices, i), 0.0, 1.0);
+	    }
 }
