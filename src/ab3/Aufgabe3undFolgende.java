@@ -8,11 +8,12 @@ import lenz.opengl.ShaderProgram;
 public class Aufgabe3undFolgende extends AbstractOpenGLBase {
 
 	private ShaderProgram shaderProgram;
-	private ShaderProgram shaderProgram2;
+	private ShaderProgram shaderProgram1;
     private static int windowWidth = 700;
     private static int windowHeight = 700;
     private float rotation = 0f;
     private Matrix4 transformationMatrix ;
+    private Matrix4 transformationMatrix1;
     private Matrix4 projectionMatrix = new Matrix4(1f, 50f, 1f, 1f);
     private final float[] cPos = { -1f, 0f, 1f };
     private final float[] yPos = { 0f, 1f, 0f };
@@ -43,6 +44,15 @@ public class Aufgabe3undFolgende extends AbstractOpenGLBase {
             bPos, rPos, cPos,
             bPos, gPos, rPos
     };
+    private float[][] colors1 = {
+            cColor, cColor, cColor,
+            rColor, rColor, rColor,
+            gColor, gColor, gColor,
+            bColor, cColor, yColor,
+            bColor, cColor, cColor,
+            bColor, gColor, rColor
+    };
+
     private float[][] colors = {
             cColor, rColor, yColor,
             rColor, gColor, yColor,
@@ -52,6 +62,7 @@ public class Aufgabe3undFolgende extends AbstractOpenGLBase {
             bColor, gColor, rColor
     };
 
+
     public static void main(String[] args) {
 		new Aufgabe3undFolgende().start("CG Aufgabe 3", 700, 700);
 	}
@@ -59,7 +70,9 @@ public class Aufgabe3undFolgende extends AbstractOpenGLBase {
 	@Override
 	protected void init() {
 		shaderProgram = new ShaderProgram("aufgabe3");
-		glUseProgram(shaderProgram.getId());
+        shaderProgram1 = new ShaderProgram("yolo3");
+
+        glUseProgram(shaderProgram.getId());
 		int va = glGenVertexArrays();
 		glBindVertexArray(va); // pyramide 1
 		int shaderNum = 0;
@@ -67,9 +80,8 @@ public class Aufgabe3undFolgende extends AbstractOpenGLBase {
         this.bindShader(this.colors, 3, shaderNum++);
 
         //int vab = glGenVertexArrays();
-        //glBindVertexArray(vab);  //pyramide 2
-        this.bindShader(this.pixelCoords1, 3, shaderNum++);
-        this.bindShader(this.colors, 3, shaderNum++);
+        glUseProgram(shaderProgram1.getId());
+        this.bindShader(this.colors1, 3, shaderNum++);
 
 
 		// Koordinaten, VAO, VBO, ... hier anlegen und im Grafikspeicher ablegen
@@ -90,6 +102,7 @@ public class Aufgabe3undFolgende extends AbstractOpenGLBase {
 
     private void bindShader(float[] arr, int groupSize, int pos) {
         int vb = glGenBuffers();
+
         glBindBuffer(GL_ARRAY_BUFFER, vb);
         glBufferData(GL_ARRAY_BUFFER, arr, GL_STATIC_DRAW);
         glVertexAttribPointer(pos, groupSize, GL_FLOAT, false, 0, 0);
@@ -99,14 +112,17 @@ public class Aufgabe3undFolgende extends AbstractOpenGLBase {
 	@Override
 	public void update() {
 		// Transformation durchfhren (Matrix anpassen)
-        Matrix4 mat = new Matrix4().rotateX(rotation * .3f).translate(-1.5f,0f,-6f);
+        Matrix4 mat = new Matrix4().rotateX(rotation * .3f).rotateZ(rotation * 0.3f).translate(-1.5f,0f,-6f);
         //Matrix4 mat = new Matrix4().translate(-1.5f,0f,-6f).rotateX(rotation * .3f);
         //Matrix4 mat = new Matrix4().rotateX(rotation * .3f).rotateY(rotation).translate(-1.5f, 0f, -6f);
+        Matrix4 mat1 = new Matrix4().rotateY(rotation * .3f).rotateZ(rotation * 0.3f).translate(-1.5f,0f,-6f);
 
         rotation += 0.03f;
         this.transformationMatrix = mat;
+        this.transformationMatrix1 = mat1;
 
-	}
+
+    }
 
 	@Override
 	protected void render() {
@@ -117,6 +133,11 @@ public class Aufgabe3undFolgende extends AbstractOpenGLBase {
         glDrawArrays(GL_TRIANGLES, 0, this.pixelCoords.length);
         // Matrix an Shader bertragen
 		// VAOs zeichnen
+        glUseProgram(this.shaderProgram1.getId());
+        this.passMatrix("matrix", new Matrix4(this.transformationMatrix1).translate(3f,0,0));
+        this.passMatrix("projection_matrix",this.projectionMatrix);
+        glDrawArrays(GL_TRIANGLES, 0, this.pixelCoords.length);
+
 	}
 
 	@Override
