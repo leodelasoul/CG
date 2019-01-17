@@ -23,15 +23,14 @@ public class Matrix4 {
         this.m = m;
     }
 
-    public Matrix4(float near, float far, float width, float height) {
+    public Matrix4(float near, float far) {
         float[] m0 = new Matrix4().getValuesAsArray();
+        m0[0] = near;
+        m0[5] = near;
         m0[10] = (-far - near) / (far - near);
         m0[14] = (-2 * near * far) / (far - near);
         m0[15] = 0;
         m0[11] = -1;
-//		float[] m1 = new Matrix4().getValuesAsArray();
-        m0[0] = (2 * near) / width;
-        m0[5] = (2 * near) / height;
         this.m = new Matrix4(m0).getValuesAsArray();
     }
 

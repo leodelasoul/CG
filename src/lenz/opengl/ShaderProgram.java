@@ -10,17 +10,16 @@ import java.util.Scanner;
 public class ShaderProgram {
 	private int id;
 
-	public ShaderProgram(String resourceNameWithoutExtension) {
+	public ShaderProgram(String resourceNameWithExtension) {
 		id = glCreateProgram();
-		loadSourceAndCompileAndAttach(resourceNameWithoutExtension + "_v.glsl", GL_VERTEX_SHADER);
-		loadSourceAndCompileAndAttach(resourceNameWithoutExtension + "_f.glsl", GL_FRAGMENT_SHADER);
+		loadSourceAndCompileAndAttach(resourceNameWithExtension + "_v.glsl", GL_VERTEX_SHADER);
+		loadSourceAndCompileAndAttach(resourceNameWithExtension + "_f.glsl", GL_FRAGMENT_SHADER);
 
 		glLinkProgram(id);
 		if (glGetProgrami(id, GL_LINK_STATUS) == GL_FALSE) {
 			throw new RuntimeException(glGetProgramInfoLog(id, glGetProgrami(id, GL_INFO_LOG_LENGTH)));
 		}
 	}
-
 	public ShaderProgram(String vertexShaderSource, String fragmentResourceName) { // for assignment 1
 		id = glCreateProgram();
 		compileAndAttach("'vertex shader'", GL_VERTEX_SHADER, vertexShaderSource);
@@ -29,6 +28,18 @@ public class ShaderProgram {
 		if (glGetProgrami(id, GL_LINK_STATUS) == GL_FALSE) {
 			throw new RuntimeException(glGetProgramInfoLog(id, glGetProgrami(id, GL_INFO_LOG_LENGTH)));
 		}
+	}
+
+	public ShaderProgram(String vertexshader, String fragmentshader,boolean isOtherCons){
+		id = glCreateProgram();
+		loadSourceAndCompileAndAttach(vertexshader, GL_VERTEX_SHADER);
+		loadSourceAndCompileAndAttach(fragmentshader, GL_FRAGMENT_SHADER);
+
+		glLinkProgram(id);
+		if (glGetProgrami(id, GL_LINK_STATUS) == GL_FALSE) {
+			throw new RuntimeException(glGetProgramInfoLog(id, glGetProgrami(id, GL_INFO_LOG_LENGTH)));
+		}
+
 	}
 
 	public int getId() {

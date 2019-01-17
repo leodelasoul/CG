@@ -9,12 +9,12 @@ public class Aufgabe3undFolgende extends AbstractOpenGLBase {
 
 	private ShaderProgram shaderProgram;
 	private ShaderProgram shaderProgram1;
-    private static int windowWidth = 700;
-    private static int windowHeight = 700;
+	private ShaderProgram phongProgram;
+
     private float rotation = 0f;
     private Matrix4 transformationMatrix ;
     private Matrix4 transformationMatrix1;
-    private Matrix4 projectionMatrix = new Matrix4(1f, 50f, 1f, 1f);
+    private Matrix4 projectionMatrix = new Matrix4(2f, 0f);
     private final float[] cPos = { -1f, 0f, 1f };
     private final float[] yPos = { 0f, 1f, 0f };
     private final float[] rPos = { 1f, 0f, 1f };
@@ -27,15 +27,20 @@ public class Aufgabe3undFolgende extends AbstractOpenGLBase {
     private final float[] gColor = { 0f, 1f, 0f };
     private final float[] bColor = { 0f, 0f, 1f };
 
+    private final float[] cryNormalVector = { 0f, 1f, 1f };
+    private final float[] rgyNormalVector = { 1f, 1f, 0f };
+    private final float[] bgyNormalVector = { 0f, 1f, -1f };
+    private final float[] bcyNormalVector = { -1f, 1f, 0f };
+    private final float[] crgbNormalVector = { 0f, -1f, 0f };
 
-    private float [][] pixelCoords1 ={
-            rPos, gPos, bPos,
-            cPos, rPos, bPos,
-            yPos, cPos, bPos,
-            yPos, bPos, gPos,
-            yPos, gPos, rPos,
-            yPos, rPos, cPos};
-
+    private final float[][] normalVectors = {
+            cryNormalVector, cryNormalVector, cryNormalVector,
+            rgyNormalVector, rgyNormalVector, rgyNormalVector,
+            bgyNormalVector, bgyNormalVector, bgyNormalVector,
+            bcyNormalVector, bcyNormalVector, bcyNormalVector,
+            crgbNormalVector, crgbNormalVector, crgbNormalVector,
+            crgbNormalVector, crgbNormalVector, crgbNormalVector
+    };
     private float[][] pixelCoords ={
             cPos, rPos, yPos,
             rPos, gPos, yPos,
@@ -45,12 +50,12 @@ public class Aufgabe3undFolgende extends AbstractOpenGLBase {
             bPos, gPos, rPos
     };
     private float[][] colors1 = {
-            cColor, cColor, cColor,
-            rColor, rColor, rColor,
-            gColor, gColor, gColor,
-            bColor, cColor, yColor,
-            bColor, cColor, cColor,
-            bColor, gColor, rColor
+            rColor, gColor, bColor,
+            cColor, rColor, bColor,
+            yColor, yColor, bColor,
+            yColor, bColor, gColor,
+            yColor, gColor, rColor,
+            yColor, rColor, cColor
     };
 
     private float[][] colors = {
@@ -64,26 +69,23 @@ public class Aufgabe3undFolgende extends AbstractOpenGLBase {
 
 
     public static void main(String[] args) {
-		new Aufgabe3undFolgende().start("CG Aufgabe 3", 700, 700);
+		new Aufgabe3undFolgende().start("CG Aufgabe 3", 1200, 800);
 	}
 
 	@Override
 	protected void init() {
 		shaderProgram = new ShaderProgram("aufgabe3");
-        shaderProgram1 = new ShaderProgram("yolo3");
+        shaderProgram1 = new ShaderProgram("aufgabe3_v.glsl","yolo3_f.glsl",true); // pinl pyramid
 
         glUseProgram(shaderProgram.getId());
 		int va = glGenVertexArrays();
-		glBindVertexArray(va); // pyramide 1
+		glBindVertexArray(va);
 		int shaderNum = 0;
         this.bindShader(this.pixelCoords, 3, shaderNum++);
         this.bindShader(this.colors, 3, shaderNum++);
-
-        //int vab = glGenVertexArrays();
-        glUseProgram(shaderProgram1.getId());
         this.bindShader(this.colors1, 3, shaderNum++);
 
-
+        //int vab = glGenVertexArrays();
 		// Koordinaten, VAO, VBO, ... hier anlegen und im Grafikspeicher ablegen
 
 		glEnable(GL_DEPTH_TEST); // z-Buffer aktivieren
@@ -112,14 +114,14 @@ public class Aufgabe3undFolgende extends AbstractOpenGLBase {
 	@Override
 	public void update() {
 		// Transformation durchfhren (Matrix anpassen)
-        Matrix4 mat = new Matrix4().rotateX(rotation * .3f).rotateZ(rotation * 0.3f).translate(-1.5f,0f,-6f);
-        //Matrix4 mat = new Matrix4().translate(-1.5f,0f,-6f).rotateX(rotation * .3f);
-        //Matrix4 mat = new Matrix4().rotateX(rotation * .3f).rotateY(rotation).translate(-1.5f, 0f, -6f);
+        //Matrix4 mat = new Matrix4().translate(0f,0f,-6f);
+        Matrix4 mat = new Matrix4().rotateY(rotation * .3f).rotateZ(rotation * 0.3f).translate(-1.5f,0f,-6f);
         Matrix4 mat1 = new Matrix4().rotateY(rotation * .3f).rotateZ(rotation * 0.3f).translate(-1.5f,0f,-6f);
 
         rotation += 0.03f;
-        this.transformationMatrix = mat;
+        //this.transformationMatrix = mat;
         this.transformationMatrix1 = mat1;
+        this.transformationMatrix = mat;
 
 
     }
@@ -138,7 +140,9 @@ public class Aufgabe3undFolgende extends AbstractOpenGLBase {
         this.passMatrix("projection_matrix",this.projectionMatrix);
         glDrawArrays(GL_TRIANGLES, 0, this.pixelCoords.length);
 
-	}
+
+
+    }
 
 	@Override
 	public void destroy() {
